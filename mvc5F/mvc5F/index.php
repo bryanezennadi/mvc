@@ -15,7 +15,7 @@ $url = trim(str_replace('mvc5F/', '', $url), '/');
 //echo ' ciao sono index.php';
 
 #router: versione 1
-$routes=[
+/*$routes=[
     'GET'=> [
         'home/index'=> ["controller"=>"HomeController", "action"=>"presentation1"],
         'home/products'=> ["controller"=>"ProductController", "action"=>"show1"],
@@ -28,26 +28,34 @@ $routes=[
         'home/services'=> ["controller"=>"ServiceController", "action"=>"presentation2"],
         'home/paperino'=> ["controller"=>"PaperinoController", "action"=>"ciao"]
     ]
-];
+];*/
+require 'router.php';
+$routerClass = new router();
+$routerClass -> addController('GET', 'home/index','HomeController', 'presentation1');
+$routerClass -> addController('GET', 'home/products','ProductController', 'show1');
+$routerClass -> addController('GET', 'home/services','ServiceController', 'presentation2');
+$routerClass -> addController('GET', 'home/paperino','Paperino', 'ciao');
+$routerClass -> addController('POST', 'home/index','HomeController', 'presentation11');
+$routerClass -> addController('POST', 'home/products','ProductController', 'show11');
+$routerClass -> addController('POST', 'home/services','ServiceController', 'presentation22');
 
-if(!isset($routes[$method])){
-    http_response_code(405);
-    die('metodo non supportato');
-}
+$reValue=$routerClass->match($url,$method);
 
-if (!array_key_exists($url, $routes[$method]))
+
+if (empty($reValue))
 {
     http_response_code(404);
     die('pagina non trovata');
 }
 
-$controller=$routes[$method] [$url]['controller'];
-echo $controller;
+$controller= $reValue['controller'];
+
+//echo $controller;
 
 echo '<br>';
 
-$action=$routes[$method] [$url]['action'];
-echo $action;
+$action=$reValue['action'];
+//echo $action;
 
 require $controller. ".php";
 $controllerObj= new $controller();
